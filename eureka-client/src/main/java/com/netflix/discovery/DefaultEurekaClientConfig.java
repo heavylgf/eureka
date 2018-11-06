@@ -92,6 +92,7 @@ public class DefaultEurekaClientConfig implements EurekaClientConfig {
      * com.netflix.discovery.EurekaClientConfig#getRegistryFetchIntervalSeconds
      * ()
      */
+    // 注册表获取时间间隔
     @Override
     public int getRegistryFetchIntervalSeconds() {
         return configInstance.getIntProperty(
@@ -104,6 +105,7 @@ public class DefaultEurekaClientConfig implements EurekaClientConfig {
      * @see com.netflix.discovery.EurekaClientConfig#
      * getInstanceInfoReplicationIntervalSeconds()
      */
+    // 获取服务实例Replication相关的时间间隔
     @Override
     public int getInstanceInfoReplicationIntervalSeconds() {
         return configInstance.getIntProperty(

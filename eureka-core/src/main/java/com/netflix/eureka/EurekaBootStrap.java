@@ -110,7 +110,10 @@ public class EurekaBootStrap implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
+            // Eureka Server配置管理以及初始化
             initEurekaEnvironment();
+
+            // Eureka Server配置文件加载
             initEurekaServerContext();
 
             ServletContext sc = event.getServletContext();
@@ -145,6 +148,7 @@ public class EurekaBootStrap implements ServletContextListener {
      * init hook for server context. Override for custom logic.
      */
     protected void initEurekaServerContext() throws Exception {
+        // 第一步：加载eureka-server.properties文件中的配置
         EurekaServerConfig eurekaServerConfig = new DefaultEurekaServerConfig();
 
         // For backward compatibility
@@ -155,8 +159,10 @@ public class EurekaBootStrap implements ServletContextListener {
         logger.info(eurekaServerConfig.getJsonCodecName());
         ServerCodecs serverCodecs = new DefaultServerCodecs(eurekaServerConfig);
 
+        // 第二步：初始化applicationInfoManager
         ApplicationInfoManager applicationInfoManager = null;
 
+        // 第三步：初始化eureka-server内部的一个eureka-client(用来跟其他的eureka-server节点进行注册和通信的)
         if (eurekaClient == null) {
             EurekaInstanceConfig instanceConfig = isCloud(ConfigurationManager.getDeploymentContext())
                     ? new CloudInstanceConfig()
@@ -164,13 +170,23 @@ public class EurekaBootStrap implements ServletContextListener {
             
             applicationInfoManager = new ApplicationInfoManager(
                     instanceConfig, new EurekaConfigBasedInstanceInfoProvider(instanceConfig).get());
-            
+
+            // EurekaClientConfig，这个东西也是个接口，也是对外暴露了一大堆的配置项，
+            // 看名字就知道了啊，这里包含的是EurekaClient相关的一些配置项。
+            // 也是去读eureka-client.properties里的一些配置
             EurekaClientConfig eurekaClientConfig = new DefaultEurekaClientConfig();
+
+            /**
+             * 基于ApplicationInfoManager（包含了服务实例的信息、配置，作为服务实例管理的一个组件），
+             * eureka client相关的配置，一起构建了一个EurekaClient，但是构建的时候，
+             * 用的是EurekaClient的子类，DiscoveryClient。
+             */
             eurekaClient = new DiscoveryClient(applicationInfoManager, eurekaClientConfig);
         } else {
             applicationInfoManager = eurekaClient.getApplicationInfoManager();
         }
 
+        // 构造了一个东西：PeerAwareInstanceRegistry
         PeerAwareInstanceRegistry registry;
         if (isAws(applicationInfoManager.getInfo())) {
             registry = new AwsInstanceRegistry(
@@ -212,10 +228,12 @@ public class EurekaBootStrap implements ServletContextListener {
         logger.info("Initialized server context");
 
         // Copy registry from neighboring eureka node
+        // 第六步：处理一点善后的事情，从相邻的eureka 节点拷贝注册信息
         int registryCount = registry.syncUp();
         registry.openForTraffic(applicationInfoManager, registryCount);
 
         // Register all monitoring statistics.
+        // 第七步：处理一点善后的事情，注册所有的监控统计项
         EurekaMonitors.registerAllStats();
     }
     
