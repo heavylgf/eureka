@@ -40,6 +40,7 @@ import com.netflix.discovery.EurekaClientConfig;
  * In this example, the program tries to get the example from the EurekaClient, and then
  * makes a REST call to a supported service endpoint
  *
+ * 基于eureka自带的例子来体验服务实例的eureka client如何启动的
  */
 public class ExampleEurekaClient {
 
