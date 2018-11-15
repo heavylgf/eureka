@@ -1378,6 +1378,8 @@ public class DiscoveryClient implements EurekaClient {
     /**
      * Refresh the current local instanceInfo. Note that after a valid refresh where changes are observed, the
      * isDirty flag on the instanceInfo is set to true
+     * 刷新当前本地instanceInfo。注意，在观察到更改的有效刷新之后
+     * instanceInfo上的isDirty标志被设置为true
      */
     void refreshInstanceInfo() {
         applicationInfoManager.refreshDataCenterInfoIfRequired();
@@ -1385,6 +1387,7 @@ public class DiscoveryClient implements EurekaClient {
 
         InstanceStatus status;
         try {
+            // 拿到健康检查器去获取当前的一个状态
             status = getHealthCheckHandler().getStatus(instanceInfo.getStatus());
         } catch (Exception e) {
             logger.warn("Exception from healthcheckHandler.getStatus, setting status to DOWN", e);
@@ -1392,6 +1395,7 @@ public class DiscoveryClient implements EurekaClient {
         }
 
         if (null != status) {
+            // 把状态设置到新的applicationInfoManager中去
             applicationInfoManager.setInstanceStatus(status);
         }
     }

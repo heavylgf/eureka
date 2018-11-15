@@ -226,6 +226,7 @@ public class ApplicationInfoManager {
         if (leaseInfo == null) {
             return;
         }
+        // 拿取配置文件
         int currentLeaseDuration = config.getLeaseExpirationDurationInSeconds();
         int currentLeaseRenewal = config.getLeaseRenewalIntervalInSeconds();
         if (leaseInfo.getDurationInSecs() != currentLeaseDuration || leaseInfo.getRenewalIntervalInSecs() != currentLeaseRenewal) {
