@@ -1,3 +1,16 @@
+Eureka 项目结构说明
+=====
+（1）eureka-client：这个就是指的eureka的客户端，注册到eureka上面去的一个服务，
+     就是一个eureka client，无论是你要注册，还是要发现别的服务，无论是服务提供者
+     还是服务消费者，都是一个eureka客户端。
+（2）eureka-core：这个就是指的eureka的服务端，其实就是eureka的注册中心。
+（3）eureka-resources：这个是基于jsp开发的eureka控制台，web页面，上面你可以看到各种注册服务。
+（4）eureka-server：这是把eureka-client、eureka-core、eureka-resources打包成了一个war包，
+    也就是说eureka-server自己本身也是一个eureka-client，同时也是注册中心，同时也提供eureka
+    控制台。真正的使用的注册中心。
+（5）eureka-examples：eureka使用的例子
+（6）eureka-test-utils：eureka的单元测试工具类
+
 Eureka
 =====
 [![Build Status](https://travis-ci.org/Netflix/eureka.svg?branch=master)](https://travis-ci.org/Netflix/eureka)
