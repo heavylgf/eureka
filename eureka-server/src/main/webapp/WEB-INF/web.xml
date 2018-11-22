@@ -8,6 +8,13 @@
     <listener-class>com.netflix.eureka.EurekaBootStrap</listener-class>
   </listener>
 
+  <!--
+  （1）StatusFilter：负责状态相关的处理逻辑
+  （2）ServerRequestAuthFilter：一看就是，对请求进行授权认证的处理的
+  （3）RateLimitingFilter：负责限流相关的逻辑的（很有可能成为eureka-server里面的一个技术亮点，
+       看看人家eureka-server作为一个注册中心，是怎么做限流的，先留意算法是什么，留到后面去看）
+  （4）GzipEncodingEnforcingFilter：gzip，压缩相关的；encoding，编码相关的
+  -->
   <filter>
     <filter-name>statusFilter</filter-name>
     <filter-class>com.netflix.eureka.StatusFilter</filter-class>
@@ -26,6 +33,10 @@
     <filter-class>com.netflix.eureka.GzipEncodingEnforcingFilter</filter-class>
   </filter>
 
+  <!--
+    jersey也是一样的，这里的这个ServletContainer就是一个核心filter，接收所有的请求，作为请求的入口，
+    处理之后来调用你写的代码逻辑。
+  -->
   <filter>
     <filter-name>jersey</filter-name>
     <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
@@ -49,6 +60,7 @@
     </init-param>
   </filter>
 
+  <!-- StatusFilter和RequestAuthFilter，一看就是通用的处理逻辑，是对所有的请求都开放的-->
   <filter-mapping>
     <filter-name>statusFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -59,6 +71,7 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <!-- RateLimitingFilter，默认是不开启的 -->
   <!-- Uncomment this to enable rate limiter filter.
   <filter-mapping>
     <filter-name>rateLimitingFilter</filter-name>
