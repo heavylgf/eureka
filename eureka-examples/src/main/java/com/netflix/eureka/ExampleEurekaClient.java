@@ -137,7 +137,7 @@ public class ExampleEurekaClient {
         System.setProperty("eureka.awsSecretKey", "fake_aws_secret_key");
         System.setProperty("eureka.numberRegistrySyncRetries", "0");
     }
-    
+
     public static void main(String[] args) throws Exception {
         injectEurekaConfiguration();
 
