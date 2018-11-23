@@ -166,6 +166,10 @@ public class EurekaBootStrap implements ServletContextListener {
         ServerCodecs serverCodecs = new DefaultServerCodecs(eurekaServerConfig);
 
         // 第二步：初始化applicationInfoManager
+
+        // Application是个什么概念，就是说，如果你是一个eureka client，客户端，扮演的角色其实是一个服务，
+        // 你作为一个服务会向eureka server去注册。Application，其实你可以认为，
+        // 就是一个eureka client -> Application，服务。
         ApplicationInfoManager applicationInfoManager = null;
 
         // 第三步：初始化eureka-server内部的一个eureka-client(用来跟其他的eureka-server节点进行注册和通信的)
@@ -173,7 +177,10 @@ public class EurekaBootStrap implements ServletContextListener {
             EurekaInstanceConfig instanceConfig = isCloud(ConfigurationManager.getDeploymentContext())
                     ? new CloudInstanceConfig()
                     : new MyDataCenterInstanceConfig();
-            
+
+            // 将instanceConfig 和 instanceInfo都传入 applicationInfoManager中去
+            // 直接基于EurekaInstanceConfig和InstnaceInfo，构造了一个ApplicationInfoManager，
+            // 后面会基于这个ApplicationInfoManager对服务实例进行一些管理。
             applicationInfoManager = new ApplicationInfoManager(
                     instanceConfig, new EurekaConfigBasedInstanceInfoProvider(instanceConfig).get());
 
