@@ -16,33 +16,20 @@
 
 package com.netflix.eureka;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.inject.Singleton;
-
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-import com.netflix.config.DynamicStringSetProperty;
+import com.netflix.config.*;
 import com.netflix.eureka.aws.AwsBindingStrategy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.*;
+
 /**
- *
  * A default implementation of eureka server configuration as required by
  * {@link EurekaServerConfig}.
- *
+ * <p>
  * <p>
  * The information required for configuring eureka server is provided in a
  * configuration file.The configuration file is searched for in the classpath
@@ -51,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * <em>eureka-server.properties</em> is assumed as the default.The properties
  * that are looked up uses the <em>namespace</em> passed on to this class.
  * </p>
- *
+ * <p>
  * <p>
  * If the <em>eureka.environment</em> property is specified, additionally
  * <em>eureka-server-<eureka.environment>.properties</em> is loaded in addition
@@ -59,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Karthik Ranganathan
- *
  */
 @Singleton
 public class DefaultEurekaServerConfig implements EurekaServerConfig {
@@ -92,6 +78,8 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
 
     private final DynamicStringProperty myUrl = configInstance.getStringProperty(namespace + "myUrl", null);
 
+    // DefaultEurekaServerConfig，是个接口的实现类，创建实例的时候，
+    // 会执行一个init()方法，在这个方法中，就会完成eureka-server.properties文件中的配置项的加载，
     public DefaultEurekaServerConfig() {
         init();
     }
@@ -102,11 +90,14 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
     }
 
     private void init() {
+        // 拿到当前的一个环境
         String env = ConfigurationManager.getConfigInstance().getString(
                 EUREKA_ENVIRONMENT, TEST);
+        // 将环境又设置成配置的一个属性
         ConfigurationManager.getConfigInstance().setProperty(
                 ARCHAIUS_DEPLOYMENT_ENVIRONMENT, env);
 
+        // EUREKA_PROPS_FILE，对应着要加载的eureka的配置文件的名字，默认就是eureka-server
         String eurekaPropsFile = EUREKA_PROPS_FILE.get();
         try {
             // ConfigurationManager
@@ -492,14 +483,15 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
      * Expects a property with name: [eureka-namespace].remoteRegionUrlsWithName and a value being a comma separated
      * list of region name & remote url pairs, separated with a ";". <br/>
      * So, if you wish to specify two regions with name region1 & region2, the property value will be:
-     <PRE>
-     eureka.remoteRegionUrlsWithName=region1;http://region1host/eureka/v2,region2;http://region2host/eureka/v2
-     </PRE>
+     * <PRE>
+     * eureka.remoteRegionUrlsWithName=region1;http://region1host/eureka/v2,region2;http://region2host/eureka/v2
+     * </PRE>
      * The above property will result in the following map:
-     <PRE>
-     region1->"http://region1host/eureka/v2"
-     region2->"http://region2host/eureka/v2"
-     </PRE>
+     * <PRE>
+     * region1->"http://region1host/eureka/v2"
+     * region2->"http://region2host/eureka/v2"
+     * </PRE>
+     *
      * @return A map of region name to remote region URL parsed from the property specified above. If there is no
      * property available, then an empty map is returned.
      */

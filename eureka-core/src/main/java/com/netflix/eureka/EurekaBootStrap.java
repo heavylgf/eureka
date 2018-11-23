@@ -106,11 +106,15 @@ public class EurekaBootStrap implements ServletContextListener {
      *
      * @see
      * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+     *
+     * eureka-core里面，监听器的执行初始化的方法，是contextInitialized()方法，
+     * 这个方法就是整个eureka-server启动初始化的一个入口。
+     *
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
-            // Eureka Server配置管理以及初始化
+            // Eureka Server配置管理以及初始化Eureka Server的环境
             initEurekaEnvironment();
 
             // Eureka Server配置文件加载
@@ -131,6 +135,7 @@ public class EurekaBootStrap implements ServletContextListener {
         logger.info("Setting the eureka configuration..");
 
         String dataCenter = ConfigurationManager.getConfigInstance().getString(EUREKA_DATACENTER);
+        // 初始化数据中心的配置，如果没有配置的话，就是DEFAULT data center
         if (dataCenter == null) {
             logger.info("Eureka data center value eureka.datacenter is not set, defaulting to default");
             ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_DATACENTER, DEFAULT);
@@ -138,6 +143,7 @@ public class EurekaBootStrap implements ServletContextListener {
             ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_DATACENTER, dataCenter);
         }
         String environment = ConfigurationManager.getConfigInstance().getString(EUREKA_ENVIRONMENT);
+        // 初始化eurueka运行的环境，如果你没有配置的话，默认就给你设置为test环境
         if (environment == null) {
             ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_ENVIRONMENT, TEST);
             logger.info("Eureka environment value eureka.environment is not set, defaulting to test");
@@ -206,6 +212,7 @@ public class EurekaBootStrap implements ServletContextListener {
             );
         }
 
+        // 第四步：处理peer节点相关的事情
         PeerEurekaNodes peerEurekaNodes = getPeerEurekaNodes(
                 registry,
                 eurekaServerConfig,
@@ -214,6 +221,7 @@ public class EurekaBootStrap implements ServletContextListener {
                 applicationInfoManager
         );
 
+        // 第五步：完成eureka server上下文（context）的构建及初始化
         serverContext = new DefaultEurekaServerContext(
                 eurekaServerConfig,
                 serverCodecs,
